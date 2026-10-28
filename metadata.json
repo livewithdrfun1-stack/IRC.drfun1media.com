@@ -1,0 +1,6 @@
+{
+  "name": "DrFun1 IRCd Web Client & WordPress Suite",
+  "description": "Full-featured IRC client, channel search engine, live stats dashboard, and WordPress plugin generator connected to irc.drfun1.com on TLS port 6697 with stream duplicator capabilities.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
