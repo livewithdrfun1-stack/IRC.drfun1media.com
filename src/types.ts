@@ -9,6 +9,38 @@ export interface SslDetails {
   error?: string;
 }
 
+export interface HubTopology {
+  leafHost: string;
+  leafPort: number;
+  hubHost: string;
+  hubNetwork: string;
+  routingStatus: 'synced' | 'routing' | 'reconnecting';
+  leafToHubLatencyMs: number;
+}
+
+export interface FmStation {
+  id: string;
+  name: string;
+  frequency: string;
+  genre: string;
+  nowPlaying: string;
+  artist: string;
+  listenersCount: number;
+  bitrate: string;
+  streamUrl: string;
+  isActive: boolean;
+}
+
+export interface LegalLicensing {
+  legalCounsel: string;
+  firmUrl: string;
+  licenseHolder: string;
+  domain: string;
+  certificateNumber: string;
+  complianceStatus: string;
+  authorizedBroadcasts: string[];
+}
+
 export interface ServerTelemetry {
   host: string;
   port: number;
@@ -17,6 +49,8 @@ export interface ServerTelemetry {
   connecting: boolean;
   lastPingMs: number;
   serverSoftware: string;
+  hubHost: string;
+  leafStatus: string;
   totalMessagesReceived: number;
   totalMessagesSent: number;
   totalDuplicated: number;

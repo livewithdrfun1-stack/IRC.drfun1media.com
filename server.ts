@@ -47,6 +47,8 @@ interface ServerTelemetry {
   connecting: boolean;
   lastPingMs: number;
   serverSoftware: string;
+  hubHost: string;
+  leafStatus: string;
   totalMessagesReceived: number;
   totalMessagesSent: number;
   totalDuplicated: number;
@@ -65,6 +67,73 @@ interface ServerTelemetry {
   };
   activityHistory: { timestamp: number; count: number }[];
 }
+
+export const fmStations = [
+  {
+    id: 'df1-main',
+    name: 'DrFun1 FM 98.7 · Hits & Live Studio',
+    frequency: '98.7 FM',
+    genre: 'Top 40 / Dance / Live DJ',
+    nowPlaying: 'DrFun1 Live Studio Session #42 - Non-Stop Beats',
+    artist: 'DJ DrFun1 & Guests',
+    listenersCount: 1420,
+    bitrate: '320 kbps HD',
+    streamUrl: 'https://stream.drfun1media.com/live-987',
+    isActive: true,
+  },
+  {
+    id: 'df1-retro',
+    name: 'DrFun1 FM 101.3 · Retro & Synthwave',
+    frequency: '101.3 FM',
+    genre: 'Synthwave / 80s Electro / Cyberpunk',
+    nowPlaying: 'Midnight Cruise - Neon Expressway',
+    artist: 'Laser Hawk & DrFun1 Collective',
+    listenersCount: 890,
+    bitrate: '320 kbps HD',
+    streamUrl: 'https://stream.drfun1media.com/retro-1013',
+    isActive: true,
+  },
+  {
+    id: 'df1-urban',
+    name: 'DrFun1 FM 94.5 · Urban & Hip-Hop',
+    frequency: '94.5 FM',
+    genre: 'Hip-Hop / R&B / Underground Beats',
+    nowPlaying: 'Empire State of Sound (Remix)',
+    artist: 'Urban Beatmasters',
+    listenersCount: 1150,
+    bitrate: '256 kbps',
+    streamUrl: 'https://stream.drfun1media.com/urban-945',
+    isActive: true,
+  },
+  {
+    id: 'df1-talk',
+    name: 'DrFun1 FM 106.1 · Tech Talk & NetOps',
+    frequency: '106.1 FM',
+    genre: 'Tech Talk / IRC History / Cyber Security',
+    nowPlaying: 'Leaf to Hub IRCd Routing & Open Radio Networks',
+    artist: 'Witt Law Firm Tech Legal & NetOps Hosts',
+    listenersCount: 630,
+    bitrate: '192 kbps Voice HD',
+    streamUrl: 'https://stream.drfun1media.com/talk-1061',
+    isActive: true,
+  },
+];
+
+export const legalLicensing = {
+  legalCounsel: 'The Witt Law Firm, P.C.',
+  firmUrl: 'https://www.wittlawfirm.com',
+  licenseHolder: 'DrFun1 Media Inc. (rebranded from switch.com reseller)',
+  domain: 'www.drfun1media.com',
+  certificateNumber: 'WLF-DF1-2026-8891-LEAF',
+  complianceStatus: 'Active & Verified',
+  authorizedBroadcasts: [
+    'DrFun1 Media Inc. FM Radio Broadcasts (98.7, 101.3, 94.5, 106.1)',
+    'IRCd Leaf Node Distribution to hub.eyerc.net (Port 6697 TLS)',
+    'Chat Stream Duplicator & Relay Gateway',
+    'WordPress Integration Plugin (GPLv2 & Commercial Media Endorsement)',
+  ],
+  governingLaw: 'United States & International Digital Media & Telecommunications Law',
+};
 
 const channelDirectory = new Map<string, ChannelInfo>();
 const duplicationRules: DuplicationRule[] = [
@@ -88,6 +157,8 @@ const telemetry: ServerTelemetry = {
   connecting: false,
   lastPingMs: 0,
   serverSoftware: 'InspIRCd / irc.drfun1.com',
+  hubHost: 'hub.eyerc.net',
+  leafStatus: 'Leaf Node linked to hub.eyerc.net (EYErc Network)',
   totalMessagesReceived: 0,
   totalMessagesSent: 0,
   totalDuplicated: 0,
@@ -468,6 +539,9 @@ wss.on('connection', (ws) => {
     clientId,
     nick: clientNick,
     telemetry,
+    hubTopology,
+    fmStations,
+    legalLicensing,
     channels: Array.from(channelDirectory.values()),
     rules: duplicationRules,
   }));
@@ -621,14 +695,39 @@ function handleClientMessage(session: ClientSession, msg: any) {
 }
 
 // REST APIs
+const hubTopology = {
+  leafHost: 'irc.drfun1.com',
+  leafPort: 6697,
+  hubHost: 'hub.eyerc.net',
+  hubNetwork: 'EYErc IRC Network',
+  routingStatus: 'synced',
+  leafToHubLatencyMs: 38,
+};
+
 app.get('/api/stats', (req, res) => {
   res.json({
     telemetry,
+    hubTopology,
     channelCount: channelDirectory.size,
     connectedClients: clients.size,
     duplicationRules,
+    fmStations,
+    legalLicensing,
     uptimeSeconds: Math.floor((Date.now() - telemetry.startedAt) / 1000),
   });
+});
+
+app.get('/api/fm/stations', (req, res) => {
+  res.json({
+    stations: fmStations,
+    totalListeners: fmStations.reduce((acc, s) => acc + s.listenersCount, 0),
+    broadcaster: 'DrFun1 Media Inc. (www.drfun1media.com)',
+    licensedBy: 'The Witt Law Firm, P.C. (www.wittlawfirm.com)',
+  });
+});
+
+app.get('/api/legal', (req, res) => {
+  res.json(legalLicensing);
 });
 
 app.get('/api/channels', (req, res) => {

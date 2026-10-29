@@ -1,6 +1,6 @@
 {
   "name": "DrFun1 IRCd Web Client & WordPress Suite",
-  "description": "Full-featured IRC client, channel search engine, live stats dashboard, and WordPress plugin generator connected to irc.drfun1.com on TLS port 6697 with stream duplicator capabilities.",
+  "description": "DrFun1 Media Inc. (www.drfun1media.com) IRCd network leaf connecting to hub.eyerc.net on TLS port 6697, FM radio stations, channel duplicator, and WordPress plugin suite legally licensed through The Witt Law Firm (www.wittlawfirm.com).",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }
